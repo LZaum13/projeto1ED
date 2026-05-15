@@ -3,7 +3,7 @@
 #include <string>
 #include <stdexcept>
 #include <./array_stack.h>
-
+#include <./array_queue.h>
 
 using namespace std;
 
@@ -75,7 +75,10 @@ class Cenario {
     }
 };
 
-
+struct coords {
+    int x; // coordenada x do cenário
+    int y; // coordenada y do cenário
+};
 
 
 /**********************
@@ -114,7 +117,9 @@ int main() {
         } else if (character == '<' && filexml.peek() == '/') {
             while (filexml.get(character) && character != '>') {
                 texto += character;
-                ID += character;
+                if (character != '/') {
+                    ID += character;
+                }
             }
             texto += '>';
             if (ID == pilha.top()) {
@@ -154,11 +159,46 @@ int main() {
     cout << "y      : " << c2.y << endl;
     cout << "matriz : " << c2.matriz << endl << endl;
 
-    /*
-     
-       COLOQUE SEU CÓDIGO AQUI
-    
-    */
+int** matriz_E = new int*[c1.altura];
+int** matriz_R = new int*[c1.altura];
+for (size_t i = 0; i < c1.altura; i++) {
+    matriz_E[i] = new int[c1.largura];
+    matriz_R[i] = new int[c1.largura];
+    for (size_t j = 0; j < c1.largura; j++) {
+        matriz_E[i][j] = c1.matriz[i * c1.largura + j] - '0';
+        matriz_R[i][j] = 0;
+    }
+}
+// início do algoritmo de busca aqui
+structures::ArrayQueue<coords> fila(c1.altura * c1.largura);
+matriz_R[c1.x][c1.y] = 1; // marca a posição inicial do cenário
+coords pos_inicial = {static_cast<int>(c1.x), static_cast<int>(c1.y)};
+if (matriz_E[pos_inicial.x][pos_inicial.y] == 0) {
+    cout << "Área limpa: 0" << endl;
+    return 0;
+}
+fila.enqueue(pos_inicial);
+int area_limpa = 0;
+while (!fila.empty()) {
+    coords pos_atual = fila.dequeue();
+    area_limpa++;
+    // Verificar as 4 direções
+    int dx[] = {-1, 1, 0, 0};
+    int dy[] = {0, 0, -1, 1};
+    for (int d = 0; d < 4; d++) {
+        int nova_x = pos_atual.x + dx[d];
+        int nova_y = pos_atual.y + dy[d];
+        // Verificar se a nova posição é válida
+        if (nova_x >= 0 && nova_x < static_cast<int>(c1.altura) && nova_y >= 0 && nova_y < static_cast<int>(c1.largura) && matriz_E[nova_x][nova_y] == 1 && matriz_R[nova_x][nova_y] == 0) {
+            coords nova_pos = {nova_x, nova_y};
+            fila.enqueue(nova_pos);
+            matriz_R[nova_x][nova_y] = 1; // marca a posição como visitada
+        }
+    }
+}
+free(matriz_E);
+free(matriz_R);
+cout << "Área limpa: " << area_limpa << endl;
 
     return 0;
 }
