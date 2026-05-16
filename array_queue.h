@@ -76,47 +76,69 @@ structures::ArrayQueue<T>::~ArrayQueue() {
 //! metodo enfileirar
 template<typename T>
 void structures::ArrayQueue<T>::enqueue(const T& data) {
-    // COLOQUE SEU CODIGO AQUI...
+    if (full()) {
+        throw std::out_of_range("fila cheia");
+    }
+    end_ = (end_ + 1) % max_size_;
+    size_++;
+    contents[end_] = data;
 }
 
 //! metodo desenfileirar
 template<typename T>
 T structures::ArrayQueue<T>::dequeue() {
-    // COLOQUE SEU CODIGO AQUI...
+    if (empty()) {
+        throw std::out_of_range("fila vazia");
+    }
+    T data = contents[begin_];
+    begin_ = (begin_ + 1) % max_size_;
+    size_--;
+    return data;
 }
 
 //! metodo retorna o ultimo
 template<typename T>
 T& structures::ArrayQueue<T>::back() {
-    // COLOQUE SEU CODIGO AQUI...
+    if (empty()) {
+        throw std::out_of_range("fila vazia");
+    }
+    return contents[end_];
 }
 
 //! metodo limpa a fila
 template<typename T>
 void structures::ArrayQueue<T>::clear() {
-    // COLOQUE SEU CODIGO AQUI...
+    begin_ = 0;
+    end_ = -1;
+    size_ = 0;
 }
 
 //! metodo retorna tamanho atual
 template<typename T>
 std::size_t structures::ArrayQueue<T>::size() {
-    // COLOQUE SEU CODIGO AQUI...
+    return size_;
 }
 
 //! metodo retorna tamanho maximo
 template<typename T>
 std::size_t structures::ArrayQueue<T>::max_size() {
-    // COLOQUE SEU CODIGO AQUI...
+    return max_size_;
 }
 
 //! metodo verifica se vazio
 template<typename T>
 bool structures::ArrayQueue<T>::empty() {
-    // COLOQUE SEU CODIGO AQUI...
+    if (size_ == 0) {
+        return true;
+    }
+    return false;
 }
 
 //! metodo verifica se esta cheio
 template<typename T>
 bool structures::ArrayQueue<T>::full() {
-    // COLOQUE SEU CODIGO AQUI...
+    if (size_ == max_size_) {
+        return true;
+    }
+    return false;
 }
